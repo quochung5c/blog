@@ -1,7 +1,22 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 const User = require("../models/User");
 const { registerAuth, loginAuth } = require("../validator/auth");
+
+router.get("/", (req, res) => {
+  User.find()
+    .exec()
+    .then(doc => {
+      res.status(200).json({
+        data: doc
+      });
+    })
+    .catch(err => {
+      res.status(400).json({ error: err });
+    });
+});
 
 router.post("/register", async (req, res) => {
   // Check email exist
@@ -9,8 +24,15 @@ router.post("/register", async (req, res) => {
   if (emailExist) return res.status(400).json({ email: "Email exist!" });
   if (registerAuth(req.body).error === null) {
     bcrypt.hash(req.body.password, 10, (err, hash) => {
+      const avatar = gravatar.url(req.body.email, {
+        s: 180,
+        d: "mm",
+        r: "pg",
+        protocol: "http"
+      });
       const data = new User({
         username: req.body.username,
+        avatar,
         password: hash,
         email: req.body.email
       });
@@ -41,14 +63,21 @@ router.post("/login", async (req, res) => {
   bcrypt.compare(req.body.password, emailExist.password, (err, result) => {
     if (err) res.status(403).json({ password: "Failed to authenticate" });
     else {
-      res.status(200).json({
-        result,
-        message: "Logged in!",
-        user: {
+      jwt.sign(
+        {
+          _id: emailExist._id,
           email: emailExist.email,
-          username: emailExist.username
+          avatar: emailExist.avatar
+        },
+        "s3cr3t",
+        { expiresIn: "1d" },
+        (err, encoded) => {
+          if (err) res.status(400).json({ error: err });
+          else {
+            res.status(200).json({ message: "Success", token: encoded });
+          }
         }
-      });
+      );
     }
   });
 });

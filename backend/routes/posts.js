@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
+const Comments = require("../models/Comment");
 const User = require("../models/User");
 const cloudinary = require("cloudinary").v2;
 const passport = require("passport");
@@ -40,9 +41,13 @@ const upload = multer({
 
 router.get("/", (req, res) => {
   Post.find()
+    .populate("author", "username avatar")
     .exec()
     .then(data => {
-      res.status(200).json({ data });
+      res.status(200).json({
+        counts: data.length,
+        data
+      });
     })
     .catch(error => {
       res.status(400).json({ error });
@@ -87,4 +92,110 @@ router.post(
   }
 );
 
+router.delete(
+  "/:postId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    let postExist = await Post.findOne({ _id: req.params.postId });
+    if (!postExist) return res.status(404).json({ post: "Not found" });
+    Post.deleteOne({ _id: req.params.postId })
+      .then(async response => {
+        let userPost = await User.findOne({ _id: req.user._id });
+        let newUserPost = userPost.posts.filter(post => {
+          return post !== req.params.postId;
+        });
+        userPost.posts = newUserPost;
+        await userPost.save();
+        res.status(200).json({ response });
+      })
+      .catch(err => res.status(400).json({ error: err }));
+  }
+);
+
+router.patch(
+  "/:postId/edit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.updateOne({ _id: req.params.postId }, req.body)
+      .then(response => {
+        res.status(200).json({
+          response
+        });
+      })
+      .catch(error => res.status(400).json({ error }));
+  }
+);
+
+router.patch(
+  "/:postId/likes",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    let postExist = await Post.findOne({ _id: req.params.postId });
+    if (!postExist) return res.status(404).json({ post: "Not found!" });
+    else {
+      let compareLike = postExist.likes.some(item => {
+        return item == req.user._id;
+      });
+      if (compareLike)
+        res.status(400).json({ message: "User has liked the post!" });
+      else {
+        Post.updateOne(
+          { _id: req.params.postId },
+          { $addToSet: { likes: req.user._id } }
+        )
+          .then(response => {
+            res.status(200).json({ response });
+          })
+          .catch(error => res.status(400).json({ error }));
+      }
+    }
+  }
+);
+
+router.patch(
+  "/:postId/image",
+  upload.single("image"),
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    let postExist = await Post.findOne({ _id: req.params.postId });
+    if (!postExist) return res.status(404).json({ post: "Not found!" });
+    cloudinary.uploader.upload(req.file.path).then(result => {
+      Post.updateOne({ _id: req.params.postId }, { image: result.secure_url })
+        .then(response => {
+          res.status(200).json({ response });
+        })
+        .catch(error => res.status(400).json({ error }));
+    });
+  }
+);
+/* Comments */
+router.post(
+  "/:postId/comments",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    let postExist = await Post.findOne(req.params.postId);
+    if (!postExist) return res.status(404).json({ post: "Not found!" });
+    let data = new Comment({
+      author: req.user._id,
+      post: req.params.postId,
+      content: req.body.content
+    });
+    data
+      .save()
+      .then(async response => {
+        postExist.comments.push(response._id);
+        await postExist.save();
+        res.status(201).json({ response });
+      })
+      .catch(error => {
+        res.status(400).json({ error });
+      });
+  }
+);
+
+router.patch(
+  "/:postId/edit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {}
+);
 module.exports = router;

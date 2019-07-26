@@ -1,14 +1,7 @@
-// Câu 1
-setNumber = ([...value]) => {
-     return value;
-};
-getCB = (array, callback) => {
-     console.log(callback);
-};
-getCB([6],setNumber([3,1,6]));
-// Câu 2
-arr = [3,5,1];
-arr.map((value)=>{
-     console.log(value)
+let a = [4,6,1,9];
+
+let filtering = a.filter(item => {
+     return item !== 9;
 })
-// Câu 3: google plzz, w3school.com reduce function
+
+console.log(filtering)

@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const User = require("../models/User");
@@ -10,6 +11,7 @@ router.get("/", (req, res) => {
     .exec()
     .then(doc => {
       res.status(200).json({
+        counts: doc.length,
         data: doc
       });
     })
@@ -74,12 +76,33 @@ router.post("/login", async (req, res) => {
         (err, encoded) => {
           if (err) res.status(400).json({ error: err });
           else {
-            res.status(200).json({ message: "Success", token: encoded });
+            res
+              .status(200)
+              .json({ message: "Success", token: `Bearer ${encoded}` });
           }
         }
       );
     }
   });
 });
+
+router.delete(
+  "/:userId",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    if (req.user._id !== req.params.userId)
+      return res.status(403).json({ user: "Unauthorized!" });
+    User.deleteOne(req.params.userId).then(response => {
+      res
+        .status(200)
+        .json({
+          response
+        })
+        .catch(error => {
+          res.status(400).json({ error });
+        });
+    });
+  }
+);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const app = express();
 const mongoose = require("mongoose");
 const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
+const commentRoute = require("./routes/comments");
 
 mongoose.connect(
   "mongodb://localhost:27017/blog",
@@ -22,6 +23,7 @@ require("./validator/routes")(passport);
 
 app.use("/users", userRoute);
 app.use("/posts", postRoute);
+app.use("/comments", commentRoute);
 app.use("/uploads", express.static("uploads"));
 
 const port = process.env.PORT || 8080;

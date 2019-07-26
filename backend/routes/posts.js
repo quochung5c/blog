@@ -194,8 +194,22 @@ router.post(
 );
 
 router.patch(
-  "/:postId/edit",
+  "/comments/:commentId",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {}
+  async (req, res) => {
+    let commentExist = await Comment.findOne(req.params.commentId);
+    if (!commentExist) return res.status(404).json({ comment: "Not found!" });
+    else if (commentExist.author !== req.user._id)
+      return res.status(403).json({ user: "Unauthorized!" });
+    else {
+      Comment.updateOne(req.params.commentId, req.body)
+        .then(response => {
+          res.status(200).json({ response });
+        })
+        .catch(error => {
+          res.status(400).json({ error });
+        });
+    }
+  }
 );
 module.exports = router;

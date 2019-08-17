@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
 const userRoute = require("./routes/users");
@@ -17,6 +18,7 @@ mongoose.connect(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 app.use(passport.initialize());
 
 require("./validator/routes")(passport);

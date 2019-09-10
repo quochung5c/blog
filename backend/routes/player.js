@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const Player = require("../models/Player");
-// const Joi = require('joi');
 const Joi = require("@hapi/joi");
-
+const { showSuggestions } = require("../test");
 router.get("/", (req, res) => {
   Player.find()
     .exec()
@@ -68,12 +67,25 @@ router.post("/add", (req, res) => {
     phoneNumber: req.body.phoneNumber,
     facebook: req.body.facebook,
     secretCode: req.body.code,
-    school: req.body.school
+    school: req.body.school,
+    note: req.body.note
   });
+
   data
     .save()
     .then(response => {
-      res.status(200).json({ response });
+      // response.rank, response.role
+      Player.find()
+        .exec()
+        .then(data => {
+          res.status(200).json({
+            suggestions: {
+              role: response.role,
+              rank: response.rank,
+              result: showSuggestions(data, response.rank, response.role)
+            }
+          });
+        });
     })
     .catch(err => {
       res.status(400).json({ error: err });

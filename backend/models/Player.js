@@ -46,6 +46,10 @@ const playerSchema = new Schema({
   secretCode: {
     type: String,
     required: true
+  },
+  note: {
+    type: String,
+    trim: true
   }
 });
 

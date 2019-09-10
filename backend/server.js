@@ -10,7 +10,8 @@ mongoose.connect(
   "mongodb://localhost:27017/fc2019",
   {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useUnifiedTopology: true
   },
   () => {
     console.log("Connect to database");

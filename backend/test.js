@@ -1,7 +1,11 @@
-let a = [4,6,1,9];
+const Joi = require("@hapi/joi");
+// const Joi = require("joi");
 
-let filtering = a.filter(item => {
-     return item !== 9;
-})
+function validateURL(url) {
+  const schema = {
+    ur: Joi.string().uri()
+  };
+  return Joi.validate(url, schema);
+}
 
-console.log(filtering)
+console.log(validateURL('abc'))

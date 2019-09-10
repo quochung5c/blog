@@ -1,32 +1,28 @@
 const express = require("express");
-const passport = require("passport");
-const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
-const userRoute = require("./routes/users");
-const postRoute = require("./routes/posts");
-const commentRoute = require("./routes/comments");
+const cors = require("cors");
+const playerRoute = require("./routes/player");
+
+const port = process.env.PORT || 8080;
 
 mongoose.connect(
-  "mongodb://localhost:27017/blog",
+  "mongodb://localhost:27017/fc2019",
   {
     useNewUrlParser: true,
     useCreateIndex: true
   },
-  () => console.log("Connect to database")
+  () => {
+    console.log("Connect to database");
+  }
 );
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cors());
-app.use(passport.initialize());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-require("./validator/routes")(passport);
+app.use("/finder", playerRoute);
 
-app.use("/users", userRoute);
-app.use("/posts", postRoute);
-app.use("/comments", commentRoute);
-app.use("/uploads", express.static("uploads"));
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});

@@ -47,7 +47,8 @@ function fetchData(database, [...rankInput], roleInput) {
       item.role !== roleInput &&
       (item.rank === rankInput[0] ||
         item.rank === rankInput[1] ||
-        item.rank === rankInput[2])
+        item.rank === rankInput[2]) &&
+      item.status === false
     );
   });
 }

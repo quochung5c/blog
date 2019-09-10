@@ -100,11 +100,34 @@ router.post("/testUrl", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+  let isExist = await Player.findOne({
+    _id: req.params.id,
+    secretCode: req.body.code
+  });
+  if (!isExist) return res.status(400).json({ error: "Unauthorized" });
   Player.deleteOne({ _id: req.params.id }, error => {
     if (error) return res.status(400).json({ error });
     else return res.status(200).json({ message: "Deleted!" });
   });
+});
+
+router.patch("/:id", async (req, res) => {
+  let isExist = await Player.findOne({
+    _id: req.params.id,
+    secretCode: req.body.code
+  });
+  if (!isExist) return res.status(400).json({ error: "Unauthorized" });
+  Player.updateOne({ _id: req.params.id }, req.body)
+    .exec()
+    .then(response => {
+      res.status(200).json({
+        response
+      });
+    })
+    .catch(error => {
+      res.status(400).json({ error });
+    });
 });
 
 module.exports = router;

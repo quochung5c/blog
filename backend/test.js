@@ -1,36 +1,3 @@
-const data = [
-  {
-    id: 1,
-    role: "Ad Carry",
-    rank: "Bạch kim"
-  },
-  {
-    id: 2,
-    role: "Mid",
-    rank: "Bạch kim"
-  },
-  {
-    id: 3,
-    role: "Ad Carry",
-    rank: "Kim cương"
-  },
-  {
-    id: 4,
-    role: "Jungle",
-    rank: "Vàng"
-  },
-  {
-    id: 5,
-    role: "Support",
-    rank: "Cao thủ"
-  },
-  {
-    id: 6,
-    role: "Top",
-    rank: "Đồng"
-  }
-];
-
 const rank = [
   "Sắt",
   "Đồng",
@@ -48,7 +15,7 @@ function fetchData(database, [...rankInput], roleInput) {
       (item.rank === rankInput[0] ||
         item.rank === rankInput[1] ||
         item.rank === rankInput[2]) &&
-      item.status === false
+      item.status === "false"
     );
   });
 }

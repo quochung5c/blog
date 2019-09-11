@@ -10,15 +10,13 @@ class List extends Component {
   };
   componentDidMount() {
     axios
-      .get("http://localhost:8080/finder")
+      .get("https://esc-finder.herokuapp.com/finder")
       .then(res => {
-        console.log(res.data.data);
         this.setState({ counts: res.data.counts, data: res.data.data });
       })
       .catch(error => {
         console.log(error);
       });
-    console.log(this.state.data);
   }
   render() {
     return (

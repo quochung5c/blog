@@ -1,12 +1,11 @@
 import React from "react";
 import "./App.css";
 import axios from "axios";
-import CardBox from "./Card";
 import RegisterForm from "./RegisterForm";
+import Edit from "./Edit";
 import Header from "./Header";
 import List from "./List";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 export default class App extends React.Component {
@@ -34,6 +33,7 @@ export default class App extends React.Component {
           <Switch>
             <Route path="/" exact component={List} />
             <Route path="/register" component={RegisterForm} />
+            <Route path="/edit" component={Edit}/>
           </Switch>
         </BrowserRouter>
       </div>

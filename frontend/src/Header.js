@@ -8,14 +8,16 @@ export default class Header extends Component {
     return (
       <div className="router">
         <div className="main">
-          <NavLink to="/">
+          <NavLink className="route-link" to="/">
             <Typography variant="h5">Hỗ trợ ghép team đánh giải</Typography>
           </NavLink>
           <div class="button-group">
-            <NavLink to="/register">
+            <NavLink className="route-link" to="/register">
               <Button color="primary">Đăng ký ghép đội</Button>
             </NavLink>
-            <Button color="secondary">Đăng nhập</Button>
+            <NavLink className="route-link" to="/edit">
+              <Button color="secondary">Chỉnh sửa thông tin</Button>
+            </NavLink>
           </div>
         </div>
         <div class="caption">

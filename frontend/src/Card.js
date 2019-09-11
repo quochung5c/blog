@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles({
   card: {
-    maxWidth: 380,
+    maxWidth: 400,
     margin: 10,
     "&:hover": {
       backgroundColor: "#edfffb",
@@ -31,13 +31,16 @@ export default function CardBox({ data }) {
         </Typography>
         <Typography variant="subtitle1">Facebook: {data.facebook}</Typography>
         <Typography variant="subtitle1">
-          Tình trạng: {data.status === true ? "Đã có team" : "Đang cần team"}
+          Tình trạng:{" "}
+          <b style={{ color: data.status === "true" ? "blue" : "red" }}>
+            {data.status === "true" ? "Đã có team" : "Đang cần team"}
+          </b>
         </Typography>
       </CardContent>
       <CardActions>
-        <Button variant="outlined">Mời</Button>
-        <Button variant="outlined" color="secondary">Lịch sử đấu</Button>
-
+        <Button variant="contained" color="primary" href={data.facebook}>
+          Liên hệ
+        </Button>
       </CardActions>
     </Card>
   );

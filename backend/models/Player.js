@@ -40,12 +40,14 @@ const playerSchema = new Schema({
     unique: true
   },
   status: {
-    type: Boolean,
+    type: String,
     default: false
   },
   secretCode: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
+    trim: true
   },
   note: {
     type: String,

@@ -16,10 +16,20 @@ router.get("/", (req, res) => {
     });
 });
 
+router.get("/:code", (req, res) => {
+  Player.findOne({ secretCode: req.params.code })
+    .exec()
+    .then(data => {
+      res.status(200).json({ data });
+    })
+    .catch(error => {
+      res.status(201).json({ error });
+    });
+});
+
 router.post("/login", (req, res) => {
   Player.findOne({
-    secretCode: req.body.secretCode,
-    phoneNumber: req.body.phoneNumber
+    secretCode: req.body.secretCode
   })
     .exec()
     .then(data => {
@@ -30,8 +40,9 @@ router.post("/login", (req, res) => {
       });
     })
     .catch(err => {
-      res.status(400).json({
-        message: "Errror"
+      res.status(301).json({
+        message: "Error",
+        err
       });
     });
 });
@@ -56,7 +67,7 @@ router.post("/add", (req, res) => {
     facebook: req.body.facebook
   };
   if (validateCode(validator).error !== null) {
-    res.status(400).json({
+    res.status(301).json({
       message: validateCode(validator).error.details[0].message
     });
   }
@@ -88,7 +99,7 @@ router.post("/add", (req, res) => {
         });
     })
     .catch(err => {
-      res.status(400).json({ error: err });
+      res.status(301).json({ error: err });
     });
 });
 

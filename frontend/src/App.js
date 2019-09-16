@@ -15,7 +15,10 @@ export default class App extends React.Component {
   };
   componentDidMount() {
     axios
-      .get("http://localhost:8080/finder")
+      .get(
+        "http://localhost:8080/finder"
+        // `https://esc-finder.herokuapp.com/finder/${this.state.code}`
+      )
       .then(res => {
         console.log(res.data.data);
         this.setState({ counts: res.data.counts, data: res.data.data });
@@ -33,7 +36,7 @@ export default class App extends React.Component {
           <Switch>
             <Route path="/" exact component={List} />
             <Route path="/register" component={RegisterForm} />
-            <Route path="/edit" component={Edit}/>
+            <Route path="/edit" component={Edit} />
           </Switch>
         </BrowserRouter>
       </div>

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import Typrography from "@material-ui/core/Typography";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, Typography, ButtonGroup } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import Axios from "axios";
 class Edit extends Component {
@@ -15,7 +14,8 @@ class Edit extends Component {
     suggests: null,
     status: null,
     data: null,
-    redirect: false
+    redirect: false,
+    error: null
   };
   handleChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -23,10 +23,25 @@ class Edit extends Component {
   handleRequest = event => {
     event.preventDefault();
     Axios.get(
-      `https://esc-finder.herokuapp.com/finder/${this.state.code}`
-    ).then(res => {
-      this.setState({ data: res.data.data });
-    });
+      // `https://esc-finder.herokuapp.com/finder/${this.state.code}`
+      `http://localhost:8080/finder/${this.state.code}`
+    )
+      .then(res => {
+        this.setState({ data: res.data.data });
+        console.log(typeof res.data.data);
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
+        this.setState({ data: error.response.data.message });
+      });
+  };
+  handleDelete = () => {
+    Axios.delete(`http://localhost:8080/finder/${this.state.code}`).then(
+      res => {
+        alert('Xóa thành công!')
+        this.setState({ redirect: true });
+      }
+    );
   };
   handleUpdate = ev => {
     ev.preventDefault();
@@ -79,7 +94,7 @@ class Edit extends Component {
     return (
       <div class="form-content">
         <form className="form" onSubmit={this.handleRequest}>
-          <Typrography variant="h5">Nhập mã bảo mật của bạn</Typrography>
+          <Typography variant="h5">Nhập mã bảo mật của bạn</Typography>
           <TextField
             name="code"
             onChange={this.handleChange}
@@ -91,6 +106,10 @@ class Edit extends Component {
         </form>
         {data === null ? (
           ""
+        ) : typeof data !== "object" ? (
+          <Typography variant="h6" color="textPrimary">
+            {data}
+          </Typography>
         ) : (
           <form class="form" onSubmit={this.handleUpdate}>
             <TextField
@@ -182,14 +201,24 @@ class Edit extends Component {
                 Đã có team
               </div>
             </div>
-            <Button
-              color="primary"
-              variant="contained"
-              style={{ marginTop: 10 }}
-              type="submit"
-            >
-              Gửi
-            </Button>
+            <ButtonGroup>
+              <Button
+                color="primary"
+                variant="contained"
+                style={{ marginTop: 10 }}
+                type="submit"
+              >
+                Gửi
+              </Button>
+              <Button
+                color="primary"
+                variant="outlined"
+                style={{ marginTop: 10 }}
+                onClick={this.handleDelete}
+              >
+                Xóa tài khoản
+              </Button>
+            </ButtonGroup>
           </form>
         )}
       </div>

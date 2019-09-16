@@ -20,30 +20,14 @@ router.get("/:code", (req, res) => {
   Player.findOne({ secretCode: req.params.code })
     .exec()
     .then(data => {
-      res.status(200).json({ data });
+      if (data === null)
+        res
+          .status(301)
+          .json({ message: "Sai mã bảo mật. Không tìm thấy thông tin !" });
+      else res.status(200).json({ data });
     })
     .catch(error => {
-      res.status(201).json({ error });
-    });
-});
-
-router.post("/login", (req, res) => {
-  Player.findOne({
-    secretCode: req.body.secretCode
-  })
-    .exec()
-    .then(data => {
-      res.status(200).json({
-        message: "OK",
-        secret_code: req.body.secretCode,
-        data
-      });
-    })
-    .catch(err => {
-      res.status(301).json({
-        message: "Error",
-        err
-      });
+      res.status(400).json({ error });
     });
 });
 
@@ -68,7 +52,9 @@ router.post("/add", (req, res) => {
   };
   if (validateCode(validator).error !== null) {
     res.status(301).json({
-      message: validateCode(validator).error.details[0].message
+      message: validateCode(validator).error.details.map(item => {
+        return item.message;
+      })
     });
   }
   let data = new Player({
@@ -111,13 +97,12 @@ router.post("/testUrl", (req, res) => {
   });
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:code", async (req, res) => {
   let isExist = await Player.findOne({
-    _id: req.params.id,
-    secretCode: req.body.code
+    secretCode: req.params.code
   });
   if (!isExist) return res.status(400).json({ error: "Unauthorized" });
-  Player.deleteOne({ _id: req.params.id }, error => {
+  Player.deleteOne({ secretCode: req.params.code }, error => {
     if (error) return res.status(400).json({ error });
     else return res.status(200).json({ message: "Deleted!" });
   });

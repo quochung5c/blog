@@ -5,12 +5,15 @@ import CardBox from "./Card";
 
 class List extends Component {
   state = {
-    counts: null,
+    counts: 0,
     data: []
   };
   componentDidMount() {
     axios
-      .get("https://esc-finder.herokuapp.com/finder")
+      .get(
+        // "https://esc-finder.herokuapp.com/finder"
+        "http://localhost:8080/finder"
+      )
       .then(res => {
         this.setState({ counts: res.data.counts, data: res.data.data });
       })
@@ -25,11 +28,15 @@ class List extends Component {
           Danh sách người chơi đang tìm đội đánh giải ({this.state.counts} kết
           quả)
         </Typography>
-        <div style={{ display: "flex" }}>
-          {this.state.data.map(item => {
-            return <CardBox data={item} />;
-          })}
-        </div>
+        {this.state.data.length === 0 ? (
+          <Typography>Loading...</Typography>
+        ) : (
+          <div style={{ display: "flex" }}>
+            {this.state.data.map(item => {
+              return <CardBox data={item} />;
+            })}
+          </div>
+        )}
       </div>
     );
   }

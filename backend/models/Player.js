@@ -49,9 +49,9 @@ const playerSchema = new Schema({
     unique: true,
     trim: true
   },
-  note: {
-    type: String,
-    trim: true
+  uid: {
+    type: Number,
+    required: true
   }
 });
 
